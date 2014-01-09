@@ -6,7 +6,8 @@
                  [environ "0.4.0"]
                  [org.apache.curator/curator-x-discovery "2.3.0"]
                  [org.clojure/clojure "1.5.1"]
-                 [org.clojure/tools.logging "0.2.6"]]
+                 [org.clojure/tools.logging "0.2.6"]
+                 [zookeeper-clj "0.9.3"]]
 
   :profiles {:dev {:dependencies [[zookem "0.1.0-SNAPSHOT"]
                                   [midje "1.5.1"]]
