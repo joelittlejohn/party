@@ -53,7 +53,5 @@
   terminates."
   [service]
   (doseq [discovery *service-discoveries*]
-    (try
-      (.registerService discovery (service-instance service))
-      (.. Runtime (getRuntime) (addShutdownHook (proxy [Thread] [] (run [] (unregister! service)))))
-      (catch Exception e (warn e "Service discovery failed to register")))))
+    (.registerService discovery (service-instance service))
+    (.. Runtime (getRuntime) (addShutdownHook (proxy [Thread] [] (run [] (unregister! service)))))))
