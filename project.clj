@@ -11,7 +11,4 @@
 
   :profiles {:dev {:dependencies [[zookem "0.1.0-SNAPSHOT"]
                                   [midje "1.5.1"]]
-                   :plugins [[lein-midje "3.0.1"]]}}
-
-  :env {:environment-name "dev"
-        :environment-zookeeper-connectionstring "btmgsrvzk001.brislabs.com:2181,btmgsrvzk002.brislabs.com:2181"})
+                   :plugins [[lein-midje "3.0.1"]]}})
