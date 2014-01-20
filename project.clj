@@ -1,4 +1,4 @@
-(defproject eureka "0.2.0-SNAPSHOT"
+(defproject eureka "0.1.1-SNAPSHOT"
 
   :description "A Clojure library that wraps the Curator service discovery/registration API."
 
@@ -11,4 +11,8 @@
 
   :profiles {:dev {:dependencies [[zookem "0.1.0-SNAPSHOT"]
                                   [midje "1.5.1"]]
-                   :plugins [[lein-midje "3.0.1"]]}})
+                   :plugins [[lein-midje "3.0.1"]
+                             [lein-release "1.0.5"]]}}
+
+  :lein-release {:deploy-via :clojars
+                 :clojars-url "clojars@clojars.brislabs.com:"})
