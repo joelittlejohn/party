@@ -1,4 +1,4 @@
-(defproject eureka "0.1.1"
+(defproject eureka "0.1.2-SNAPSHOT"
 
   :description "A Clojure library that wraps the Curator service discovery/registration API."
 
