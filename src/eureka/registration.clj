@@ -15,7 +15,8 @@
    "poke" ["poke" "cq1" "cq3"]
    "cq1" ["cq1"]
    "cq3" ["poke" "cq3"]
-   "prod" ["prod" "live"]})
+   "prod" ["prod" "live"]
+   "live" ["prod" "live"]})
 
 (defn ^:private service-discoveries [environment-name]
   (reduce #(conj %1 (service-discovery *curator-framework* %2)) #{} (environments (lower-case environment-name))))
