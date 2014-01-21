@@ -21,7 +21,7 @@
   ([connection-string environment-name]
      (disconnect!)
      (alter-var-root #'*curator-framework* (constantly (c/curator-framework connection-string)))
-     (alter-var-root #'*service-discovery* (constantly (c/service-discovery *curator-framework* environment-name)))))
+     (alter-var-root #'*service-discovery* (constantly (c/service-discovery *curator-framework* (lower-case environment-name))))))
 
 (defn service-provider [name]
   (c/service-provider *service-discovery* name))

@@ -1,6 +1,7 @@
 (ns eureka.registration
   (:require [eureka.curator-utils :refer :all])
-  (:require [clojure.tools.logging :refer [warn]]
+  (:require [clojure.string :refer [lower-case]]
+            [clojure.tools.logging :refer [warn]]
             [environ.core :refer [env]]))
 
 (declare ^:private ^:dynamic *curator-framework*)
@@ -17,7 +18,7 @@
    "prod" ["prod" "live"]})
 
 (defn ^:private service-discoveries [environment-name]
-  (reduce #(conj %1 (service-discovery *curator-framework* %2)) #{} (environments environment-name)))
+  (reduce #(conj %1 (service-discovery *curator-framework* %2)) #{} (environments (lower-case environment-name))))
 
 (defn disconnect! []
   (when (bound? #'*curator-framework*)
