@@ -33,3 +33,11 @@
         (zk/children *zk-client* "/cq1/instances/foo") => (one-of string?)
         (zk/children *zk-client* "/cq3/instances/foo") => (one-of string?)
         (eureka/disconnect!)))
+
+(fact "uri-spec is optional for register!"
+      (with-zk {:nodes {"/dev/instances" nil}}
+        (eureka/connect! *zk-connect-string* "dev")
+        (eureka/register! {:name "foo"
+                           :port 5000})
+        (zk/children *zk-client* "/dev/instances/foo") => (one-of string?)
+        (eureka/disconnect!)))

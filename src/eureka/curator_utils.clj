@@ -18,13 +18,13 @@
     (.start)))
 
 (defn service-instance [s]
-  (.. ServiceInstance
-      (builder)
-      (id (str (UUID/randomUUID)))
-      (name (:name s))
-      (port (:port s))
-      (uriSpec (UriSpec. (:uri-spec s)))
-      (build)))
+  (-> (ServiceInstance/builder)
+      (.id (str (UUID/randomUUID)))
+      (.name (:name s))
+      (.port (:port s))
+      (cond-> (:uri-spec s) (.uriSpec (UriSpec. (:uri-spec s))))
+      (cond-> (:address s) (.address (:address s)))
+      (.build)))
 
 (defn service-provider [service-discovery name]
   (doto (.. service-discovery
