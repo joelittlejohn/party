@@ -13,7 +13,7 @@ A typical **registration** example, a backend service registering a resource:
 (defn register-public-resources []
   (eureka/connect!)
   (eureka/register! {:name "user-sessions"
-                     :port (env :service-port)
+                     :port (Integer. (env :service-port))
                      :uri-spec "/1.x/{territory}/users/{userid}/sessions/{devicetype}/{app}"}))
 ```
 
