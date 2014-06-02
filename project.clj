@@ -4,7 +4,7 @@
 
   :dependencies [[cheshire "5.2.0"]
                  [environ "0.4.0"]
-                 [org.apache.curator/curator-x-discovery "2.4.2"]
+                 [org.apache.curator/curator-x-discovery "2.5.0"]
                  [org.clojure/clojure "1.5.1"]
                  [org.clojure/tools.logging "0.2.6"]
                  [zookeeper-clj "0.9.3"]]
