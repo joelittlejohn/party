@@ -1,4 +1,6 @@
 (ns eureka.registration
+  "Service registration via Curator. Register resources and expose them
+  to the outside world via Gatekeeper."
   (:require [eureka.curator-utils :refer :all])
   (:require [clojure.string :refer [lower-case]]
             [clojure.tools.logging :refer [warn]]
@@ -11,17 +13,20 @@
 (def ^:private environments
   "For the time being we may have to register into multiple environments
   (e.g. services in poke are used to service requests in cq1 and cq3)."
-  {"dev" ["dev"]
+  {"dev"  ["dev"]
    "poke" ["poke" "cq1" "cq3"]
-   "cq1" ["cq1"]
-   "cq3" ["poke" "cq3"]
+   "cq1"  ["cq1"]
+   "cq3"  ["poke" "cq3"]
    "prod" ["prod" "live"]
    "live" ["prod" "live"]})
 
 (defn ^:private service-discoveries [environment-name]
   (reduce #(conj %1 (service-discovery *curator-framework* %2)) #{} (environments (lower-case environment-name))))
 
-(defn disconnect! []
+(defn disconnect!
+  "Disconnect from service registration, closing any connection to
+  Zookeeper and removing any registrations for this node."
+  []
   (when (bound? #'*curator-framework*)
     (.close *curator-framework*)
     (.unbindRoot #'*curator-framework*)
@@ -49,7 +54,7 @@
   "Register a service running on this host so that it can be
   discovered by other applications. A typical service might look like:
 
-  `{:name \"care\", :port \"8080\", :uri-spec \"/1.x/care/*\"}`
+  {:name \"care\", :port \"8080\", :uri-spec \"/1.x/care/*\"}
 
   Anything registered will be automatically unregistered when the JVM
   terminates."

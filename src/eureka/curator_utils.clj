@@ -1,4 +1,5 @@
 (ns eureka.curator-utils
+  "Utilities for connecting/reading/writing to Curator service discovery."
   (:require [clojure.string :refer [lower-case]])
   (:import [java.util UUID]
            [org.apache.curator.framework CuratorFrameworkFactory]

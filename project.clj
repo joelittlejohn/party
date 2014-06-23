@@ -12,7 +12,8 @@
   :profiles {:dev {:dependencies [[zookem "0.1.0-SNAPSHOT"]
                                   [midje "1.5.1"]]
                    :plugins [[lein-midje "3.0.1"]
-                             [lein-release "1.0.5"]]}}
+                             [lein-release "1.0.5"]
+                             [codox "0.8.9"]]}}
 
   :lein-release {:deploy-via :clojars
                  :clojars-url "clojars@clojars.brislabs.com:"})
