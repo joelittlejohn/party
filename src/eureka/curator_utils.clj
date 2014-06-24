@@ -4,7 +4,8 @@
   (:import [java.util UUID]
            [org.apache.curator.framework CuratorFrameworkFactory]
            [org.apache.curator.retry RetryOneTime]
-           [org.apache.curator.x.discovery ServiceDiscoveryBuilder ServiceInstance UriSpec]))
+           [org.apache.curator.x.discovery ServiceDiscoveryBuilder ServiceInstance UriSpec]
+           [org.apache.curator.x.discovery.strategies RandomStrategy]))
 
 (defn curator-framework [connection-string]
   (doto (CuratorFrameworkFactory/newClient connection-string (RetryOneTime. 1))
@@ -31,5 +32,6 @@
   (doto (.. service-discovery
             (serviceProviderBuilder)
             (serviceName name)
+            (providerStrategy (RandomStrategy.))
             (build))
     (.start)))
