@@ -41,3 +41,17 @@
                            :port 5000})
         (zk/children *zk-client* "/dev/instances/foo") => (one-of string?)
         (eureka/disconnect!)))
+
+(fact "expose! attaches data to registered service"
+      (with-zk {:nodes {"/dev/instances" nil}}
+        (let [service {:name "foo"
+                       :uri-spec "/1.x/users/{userid}"
+                       :port 5000}]
+          (eureka/connect! *zk-connect-string* "dev")
+          (eureka/register! service)
+          (eureka/expose! service [:get :post] {:role ["user"]})
+          (let [data (-> (zk/data *zk-client* "/dev/instances/foo") :data (String.) (json/parse-string true))]
+            data => (contains {:path "/1.x/users/{userid}"
+                               :restrict {:role ["user"]}
+                               :methods ["get" "post"]}))
+          (eureka/disconnect!))))

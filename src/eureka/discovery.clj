@@ -5,18 +5,18 @@
             [clojure.tools.logging :refer [warn]]
             [environ.core :refer [env]]))
 
-(declare ^:private ^:dynamic *curator-framework*)
+(def ^:private ^:dynamic *curator-framework* nil)
 
-(declare ^:private ^:dynamic *service-discovery*)
+(def ^:private ^:dynamic *service-discovery* nil)
 
 (defn disconnect!
   "Disconnect from service discovery, closing any connection to
   Zookeeper."
   []
-  (when (bound? #'*curator-framework*)
+  (when *curator-framework*
     (.close *curator-framework*)
-    (.unbindRoot #'*curator-framework*)
-    (.unbindRoot #'*service-discovery*)))
+    (alter-var-root #'*curator-framework* (constantly nil))
+    (alter-var-root #'*service-discovery* (constantly nil))))
 
 (defn connect!
   "Connect to Zookeeper and initialize service discovery"
