@@ -5,7 +5,7 @@
             [clojure.tools.logging :refer [warn]]
             [environ.core :refer [env]]))
 
-(def ^:private ^:dynamic *curator-framework* nil)
+(def ^:dynamic *curator-framework* nil)
 
 (def ^:private ^:dynamic *service-discovery* nil)
 

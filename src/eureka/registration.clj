@@ -8,7 +8,7 @@
             [environ.core :refer [env]]
             [flatland.useful.map :refer [map-to]]))
 
-(def ^:private ^:dynamic *curator-framework* nil)
+(def ^:dynamic *curator-framework* nil)
 
 (def ^:private ^:dynamic *service-discoveries* nil)
 
