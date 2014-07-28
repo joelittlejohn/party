@@ -62,8 +62,7 @@
   terminates."
   [service]
   (doseq [discovery (vals *service-discoveries*)]
-    (.registerService discovery (service-instance service))
-    (.. Runtime (getRuntime) (addShutdownHook (proxy [Thread] [] (run [] (unregister! service)))))))
+    (.registerService discovery (service-instance service))))
 
 (defn expose!
   "Expose a registered service publicly (through Gatekeeper) so that it can
