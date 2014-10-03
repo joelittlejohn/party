@@ -41,3 +41,26 @@ A typical **discovery** example, _foo_ service finding an instance of _bar_ hand
 ```
 
 and services that use `eureka.registration` should add a call to `(eureka/healthy?)` to their healthcheck.
+
+## Graceful shutdown
+
+When you register for service discovery it's essential that your instances unregister gracefully (e.g. when your sevice is deployed and old instances are shut down, you shouldn't see a short period of downtime). You must unregister from service discovery **before** Jetty begins rejecting incoming requests.
+
+If you're using [instrumented-ring-jetty](http://github.brislabs.com/libraries/instrumented-ring-jetty) then you can create a safe shutdown like:
+
+```clj
+(defn configure-server [server]
+  (doto server
+    (.setStopAtShutdown true)
+    (.setGracefulShutdown (Integer/valueOf (env :service-jetty-gracefulshutdown-millis)))))
+
+(defn unregister-public-resources
+  []
+  (eureka/disconnect!)
+  (Thread/sleep (Integer/valueOf (env :service-curator-gracefulunregister-millis))))
+
+(defn start-server []
+  (instrumented/run-jetty #'web/app {...
+                                     :configurator configure-server
+                                     :on-stop unregister-public-resources}))
+```
