@@ -40,7 +40,7 @@ A typical **discovery** example, _foo_ service finding an instance of _bar_ hand
 
 ```
 
-and services that use `eureka.registration` should add a call to `(eureka/healthy?)` to their healthcheck.
+and services that use `eureka.registration` should add a call to `(eureka.discovery/healthy?)` to their healthcheck.
 
 ## Graceful shutdown
 
