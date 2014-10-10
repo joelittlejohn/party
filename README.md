@@ -15,6 +15,11 @@ A typical **registration** example, a backend service registering a resource:
   (eureka/register! {:name "user-sessions"
                      :port (Integer. (env :service-port))
                      :uri-spec "/1.x/{territory}/users/{userid}/sessions/{devicetype}/{app}"}))
+                     
+(defn start []
+  (setup)
+  (reset! server (start-server))
+  (register-public-resources))
 ```
 
 A typical **discovery** example, _foo_ service finding an instance of _bar_ handle a request:
