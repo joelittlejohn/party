@@ -1,5 +1,7 @@
 # eureka
 
+![latest version](http://clojars.brislabs.com/eureka/latest-version.svg)
+
 A Clojure library that wraps the Curator service discovery/registration API and provides a set of idiomatic Clojure functions to register and discover services. Eureka also manages the lifecycle of the CuratorFramework internally, creating a connection to zookeeper instances as necessary and closing those connections when your application terminates.
 
 ## Usage
