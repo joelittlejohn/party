@@ -5,7 +5,7 @@
   :dependencies [[cheshire "5.3.1"]
                  [environ "0.5.0"]
                  [org.flatland/useful "0.11.2"]
-                 [org.apache.curator/curator-x-discovery "2.6.0" :exclusions [org.slf4j/slf4j-log4j12]]
+                 [org.apache.curator/curator-x-discovery "2.7.0" :exclusions [org.slf4j/slf4j-log4j12]]
                  [org.clojure/clojure "1.5.1"]
                  [org.clojure/tools.logging "0.3.0"]
                  [zookeeper-clj "0.9.3"]]
