@@ -19,6 +19,9 @@
         (eureka/healthy?) => falsey
         (eureka/disconnect!)))
 
+(fact "health check fails when not connected"
+      (eureka/healthy?) => falsey)
+
 (fact "register! creates a new registration"
       (with-zk {:nodes {"/dev/instances" nil}}
         (eureka/connect! *zk-connect-string* "dev")

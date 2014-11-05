@@ -97,7 +97,7 @@
   (try
     (doseq [[environment discovery] *service-discoveries*]
       (.queryForNames discovery))
-    true
+    (not (empty? *service-discoveries*))
     (catch Exception e
       (warn e "Service discovery failed to get service names from Zookeeper")
       false)))
