@@ -5,6 +5,20 @@
             [zookem.core :refer [with-zk *zk-client* *zk-connect-string*]]
             [zookeeper :as zk]))
 
+(def environment-name "dev")
+
+(fact "health check succeeds when service discovery can list instances"
+      (with-zk {:nodes {"/dev/instances" nil}}
+        (eureka/connect! *zk-connect-string* environment-name)
+        (eureka/healthy?) => truthy
+        (eureka/disconnect!)))
+
+(fact "health check fails when service discovery cannot list instances"
+      (with-zk {}
+        (eureka/connect! *zk-connect-string* environment-name)
+        (eureka/healthy?) => falsey
+        (eureka/disconnect!)))
+
 (fact "register! creates a new registration"
       (with-zk {:nodes {"/dev/instances" nil}}
         (eureka/connect! *zk-connect-string* "dev")

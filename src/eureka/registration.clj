@@ -90,3 +90,14 @@
                                            :methods methods
                                            :restrict restrictions})]
       (.. *curator-framework* setData (forPath node-path (.getBytes node-data "utf-8"))))))
+
+(defn healthy?
+  "Is service registration healthy? Are we able to connect to Zookeeper "
+  []
+  (try
+    (doseq [[environment discovery] *service-discoveries*]
+      (.queryForNames discovery))
+    true
+    (catch Exception e
+      (warn e "Service discovery failed to get service names from Zookeeper")
+      false)))
