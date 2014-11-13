@@ -26,7 +26,7 @@ A typical **registration** example, a backend service registering a resource:
 
 Services that use `eureka.registration` should add a call to `(eureka.registration/healthy?)` to their healthcheck.
 
-A typical **discovery** example, _X_ service finding an instance of _Y_ to handle a request:
+A typical **discovery** example, service _X_ finding an instance of service _Y_ to handle a request:
 
 ```clj
 (ns x.setup
