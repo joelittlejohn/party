@@ -24,10 +24,12 @@ A typical **registration** example, a backend service registering a resource:
   (register-public-resources))
 ```
 
-A typical **discovery** example, _foo_ service finding an instance of _bar_ handle a request:
+Services that use `eureka.registration` should add a call to `(eureka.registration/healthy?)` to their healthcheck.
+
+A typical **discovery** example, _X_ service finding an instance of _Y_ to handle a request:
 
 ```clj
-(ns foo.setup
+(ns x.setup
   (:require [eureka.registration :as eureka])
 
 (defn setup []
@@ -36,18 +38,18 @@ A typical **discovery** example, _foo_ service finding an instance of _bar_ hand
 ```
 
 ```clj
-(ns foo.bar
-  (:require [eureka.registration :as eureka])
+(ns x.core
+  (:require [eureka.discovery :as eureka])
 
-(defn fn-that-calls-bar [territory]
-  (with-open [service-provider (eureka/service-provider "bar")]
+(defn fn-that-calls-y [territory]
+  (with-open [service-provider (eureka/service-provider "y")]
             (let [instance (.getInstance service-provider)]
               ;; do something with instance
               )))
 
 ```
 
-and services that use `eureka.discovery` should add a call to `(eureka.discovery/healthy?)` to their healthcheck.
+Services that use `eureka.discovery` should add a call to `(eureka.discovery/healthy?)` to their healthcheck.
 
 ## Graceful shutdown
 
