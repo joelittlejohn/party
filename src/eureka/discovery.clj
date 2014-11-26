@@ -21,7 +21,9 @@
 (defn connect!
   "Connect to Zookeeper and initialize service discovery"
   ([]
-     (connect! (env :environment-zookeeper-connectionstring) (env :environment-name)))
+     (connect! (or (env :environment-zookeeper-connectionstring)
+                   (env :zookeeper-connectionstring))
+               (env :environment-name)))
   ([connection-string environment-name]
      (disconnect!)
      (alter-var-root #'*curator-framework* (constantly (c/curator-framework connection-string)))
