@@ -51,6 +51,32 @@
         (zk/children *zk-client* "/cq3/instances/foo") => (one-of string?)
         (eureka/disconnect!)))
 
+(fact "register! with healthcheck fails when healthcheck fails"
+      (with-zk {:nodes {"/poke/instances" nil
+                        "/cq1/instances" nil
+                        "/cq3/instances" nil}}
+        (eureka/connect! *zk-connect-string* "poke")
+        (eureka/register! {:name "foo"
+                           :uri-spec "/1.x/users/{userid}"
+                           :port 5000} (constantly false) 1) => (throws Exception)
+        (eureka/disconnect!)))
+
+(declare healthy?)
+
+(fact "register! with healthcheck succeeds when healthcheck eventually returns true"
+      (with-zk {:nodes {"/poke/instances" nil
+                        "/cq1/instances" nil
+                        "/cq3/instances" nil}}
+        (eureka/connect! *zk-connect-string* "poke")
+        (eureka/register! {:name "foobar"
+                           :uri-spec "/1.x/users/{userid}"
+                           :port 5000} healthy? 2)
+        => nil
+        (provided
+         (healthy?) =streams=> [false true])
+        (zk/children *zk-client* "/poke/instances/foobar") => (one-of string?)
+        (eureka/disconnect!)))
+
 (fact "uri-spec is optional for register!"
       (with-zk {:nodes {"/dev/instances" nil}}
         (eureka/connect! *zk-connect-string* "dev")

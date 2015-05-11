@@ -16,7 +16,8 @@ A typical **registration** example, a backend service registering a resource:
   (eureka/connect!)
   (eureka/register! {:name "user-sessions"
                      :port (Integer. (env :service-port))
-                     :uri-spec "/1.x/{territory}/users/{userid}/sessions/{devicetype}/{app}"}))
+                     :uri-spec "/1.x/{territory}/users/{userid}/sessions/{devicetype}/{app}"}
+                     #(-> (web/healthcheck) :success))
                      
 (defn start []
   (setup)
@@ -25,6 +26,17 @@ A typical **registration** example, a backend service registering a resource:
 ```
 
 Services that use `eureka.registration` should add a call to `(eureka.registration/healthy?)` to their healthcheck.
+
+You can also use a healthcheck function which must return truthy before registration will succeed. If the healthcheck function returns falsey, 10 attemps will be made to register, one second apart (override with `:eureka-registration-attempts` environ key):
+
+```clj
+(defn register-public-resources []
+  (eureka/connect!)
+  (eureka/register! {:name "user-sessions"
+                     :port (Integer. (env :service-port))
+                     :uri-spec "/1.x/{territory}/users/{userid}/sessions/{devicetype}/{app}"}
+                     #(-> (web/healthcheck) :success))
+```
 
 A typical **discovery** example, service _X_ finding an instance of service _Y_ to handle a request:
 

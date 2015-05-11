@@ -4,9 +4,10 @@
   (:require [eureka.curator-utils :refer :all])
   (:require [cheshire.core :as json]
             [clojure.string :refer [lower-case]]
-            [clojure.tools.logging :refer [warn]]
+            [clojure.tools.logging :refer [info warn]]
             [environ.core :refer [env]]
-            [flatland.useful.map :refer [map-to]]))
+            [flatland.useful.map :refer [map-to]])
+  (:import [java.util.concurrent TimeUnit]))
 
 (def ^:dynamic *curator-framework* nil)
 
@@ -61,10 +62,24 @@
   {:name \"care\", :port \"8080\", :uri-spec \"/1.x/care/*\"}
 
   Anything registered will be automatically unregistered when the JVM
-  terminates."
-  [service]
-  (doseq [discovery (vals *service-discoveries*)]
-    (.registerService discovery (service-instance service))))
+  terminates.
+
+  If registering with a healthcheck fn, eureka will wait one second between
+  attempts. If not specified by :eureka-registration-attempts, there will be
+  10 attempts to register before an exception is thrown."
+  ([service]
+   (register! service (constantly true)))
+  ([service healthy?]
+   (register! service healthy? (Integer/valueOf (env :eureka-registration-attempts "10"))))
+  ([service healthy? attempts]
+   (when (< attempts 1)
+     (throw (Exception. (str "Failed to register service: " service))))
+   (if (healthy?)
+     (doseq [discovery (vals *service-discoveries*)]
+       (.registerService discovery (service-instance service)))
+     (do (info "Not yet healthy, can't register" service)
+         (.sleep TimeUnit/SECONDS 1)
+         (recur service healthy? (dec attempts))))))
 
 (defn expose!
   "Expose a registered service publicly (through Gatekeeper) so that it can
