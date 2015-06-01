@@ -21,7 +21,7 @@
 
 (defn service-instance [s]
   (-> (ServiceInstance/builder)
-      (.id (str (UUID/randomUUID)))
+      (.id (or (:id s) (str (UUID/randomUUID))))
       (.name (:name s))
       (.port (:port s))
       (cond-> (:uri-spec s) (.uriSpec (UriSpec. (:uri-spec s))))

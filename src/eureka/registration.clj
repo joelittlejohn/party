@@ -75,8 +75,10 @@
    (when (< attempts 1)
      (throw (Exception. (str "Failed to register service: " service))))
    (if (healthy?)
-     (doseq [discovery (vals *service-discoveries*)]
-       (.registerService discovery (service-instance service)))
+     (let [instance (service-instance service)]
+       (doseq [discovery (vals *service-discoveries*)]
+         (.registerService discovery instance))
+       (. instance getId))
      (do (info "Not yet healthy, can't register" service)
          (.sleep TimeUnit/SECONDS 1)
          (recur service healthy? (dec attempts))))))

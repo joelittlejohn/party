@@ -25,6 +25,8 @@ A typical **registration** example, a backend service registering a resource:
   (register-public-resources))
 ```
 
+`eureka.registration/connect!` uses the properties :zookeeper-connectionstring and :environment-name. An alternative to setting them in your project.clj file (or as system variables via a bash script) is to provide these two values directly as arguments to the function call.
+
 Services that use `eureka.registration` should add a call to `(eureka.registration/healthy?)` to their healthcheck.
 
 You can also use a healthcheck function which must return truthy before registration will succeed. If the healthcheck function returns falsey, 10 attemps will be made to register, one second apart (override with `:eureka-registration-attempts` environ key):
@@ -42,7 +44,7 @@ A typical **discovery** example, service _X_ finding an instance of service _Y_ 
 
 ```clj
 (ns x.setup
-  (:require [eureka.registration :as eureka])
+  (:require [eureka.discovery :as eureka])
 
 (defn setup []
   ...
