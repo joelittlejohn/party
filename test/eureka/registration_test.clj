@@ -25,14 +25,12 @@
 (fact "register! creates a new registration"
       (with-zk {:nodes {"/dev/instances" nil}}
         (eureka/connect! *zk-connect-string* "dev")
-        (eureka/register! {:name "foo"
-                           :uri-spec "/1.x/users/{userid}"
-                           :port 5000})
-        (zk/exists *zk-client* "/dev/instances/foo") => truthy
-        (let [node (str "/dev/instances/foo/" (first (zk/children *zk-client* "/dev/instances/foo")))
+        (let [node-id (eureka/register! {:name "foo" :uri-spec "/1.x/users/{userid}" :port 5000})
+              node (str "/dev/instances/foo/" (first (zk/children *zk-client* "/dev/instances/foo")))
               data (-> (zk/data *zk-client* node) :data (String.) (json/parse-string true))]
+          (zk/exists *zk-client* "/dev/instances/foo") => truthy
           data => (contains {:name "foo"
-                             :id string?
+                             :id node-id
                              :address string?
                              :port 5000
                              :uriSpec truthy}))
@@ -71,7 +69,7 @@
         (eureka/register! {:name "foobar"
                            :uri-spec "/1.x/users/{userid}"
                            :port 5000} healthy? 2)
-        => nil
+        => string?
         (provided
          (healthy?) =streams=> [false true])
         (zk/children *zk-client* "/poke/instances/foobar") => (one-of string?)
