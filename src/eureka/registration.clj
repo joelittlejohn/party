@@ -1,7 +1,7 @@
 (ns eureka.registration
   "Service registration via Curator. Register resources and expose them
   to the outside world via Gatekeeper."
-  (:require [eureka.curator-utils :refer :all])
+  (:require [eureka.curator-utils :as c])
   (:require [cheshire.core :as json]
             [clojure.string :refer [lower-case]]
             [clojure.tools.logging :refer [info warn]]
@@ -11,20 +11,9 @@
 
 (def ^:dynamic *curator-framework* nil)
 
-(def ^:private ^:dynamic *service-discoveries* nil)
+(def ^:private ^:dynamic *environment* nil)
 
-(def ^:private environments
-  "For the time being we may have to register into multiple environments
-  (e.g. services in poke are used to service requests in cq1 and cq3)."
-  {"dev"  ["dev"]
-   "poke" ["poke" "cq1" "cq3"]
-   "cq1"  ["cq1"]
-   "cq3"  ["poke" "cq3"]
-   "prod" ["prod" "live"]
-   "live" ["prod" "live"]})
-
-(defn ^:private service-discoveries [environment-name]
-  (map-to (partial service-discovery *curator-framework*) (environments (lower-case environment-name))))
+(def ^:private ^:dynamic *service-discovery* nil)
 
 (defn disconnect!
   "Disconnect from service registration, closing any connection to
@@ -33,7 +22,8 @@
   (when *curator-framework*
     (.close *curator-framework*)
     (alter-var-root #'*curator-framework* (constantly nil))
-    (alter-var-root #'*service-discoveries* (constantly nil))))
+    (alter-var-root #'*service-discovery* (constantly nil))
+    (alter-var-root #'*environment* (constantly nil))))
 
 (defn connect!
   "Connect to Zookeeper and initialize service registration"
@@ -42,27 +32,27 @@
                    (env :zookeeper-connectionstring))
                (env :environment-name)))
   ([connection-string environment-name]
-     (disconnect!)
-     (alter-var-root #'*curator-framework* (constantly (curator-framework connection-string)))
-     (alter-var-root #'*service-discoveries* (constantly (service-discoveries environment-name)))))
+   (disconnect!)
+   (alter-var-root #'*environment* (constantly (lower-case environment-name)))
+   (alter-var-root #'*curator-framework* (constantly (c/curator-framework connection-string)))
+   (alter-var-root #'*service-discovery* (constantly (c/service-discovery *curator-framework* *environment*)))))
 
 (defn unregister!
   "Unregister a service running on this host so that it can no longer by
-  discovered by other applications."
+  discovered by other applications.
+
+  If your container is shutting down, there's no need to unregister
+  individual services, you can simply call disconnect!."
   [service]
-  (doseq [discovery (vals *service-discoveries*)]
-    (try
-      (.unregisterService discovery (service-instance service))
-      (catch Exception e (warn e "Service discovery failed to unregister")))))
+  (try
+    (.unregisterService *service-discovery* (c/service-instance service))
+    (catch Exception e (warn e "Service discovery failed to unregister"))))
 
 (defn register!
   "Register a service running on this host so that it can be
   discovered by other applications. A typical service might look like:
 
   {:name \"care\", :port \"8080\", :uri-spec \"/1.x/care/*\"}
-
-  Anything registered will be automatically unregistered when the JVM
-  terminates.
 
   If registering with a healthcheck fn, eureka will wait one second between
   attempts. If not specified by :eureka-registration-attempts, there will be
@@ -75,16 +65,17 @@
    (when (< attempts 1)
      (throw (Exception. (str "Failed to register service: " service))))
    (if (healthy?)
-     (let [instance (service-instance service)]
-       (doseq [discovery (vals *service-discoveries*)]
-         (.registerService discovery instance))
+     (let [instance (c/service-instance service)]
+       (.registerService *service-discovery* instance)
        (. instance getId))
      (do (info "Not yet healthy, can't register" service)
          (.sleep TimeUnit/SECONDS 1)
          (recur service healthy? (dec attempts))))))
 
 (defn expose!
-  "Expose a registered service publicly (through Gatekeeper) so that it can
+  "**NOT YET SUPPORTED**
+
+  Expose a registered service publicly (through Gatekeeper) so that it can
   be accessed by clients via api/sapi/private domains. Be sure to think
   hard about what restrictions to apply to your resource *before*
   exposing it.
@@ -103,20 +94,17 @@
   *Note*: You must (register!) your service before it can be exposed."
   [service methods restrictions]
   {:pre [(:uri-spec service) (seq methods)]}
-  (doseq [[environment discovery] *service-discoveries*]
-    (let [node-path (str "/" environment "/instances/" (:name service))
-          node-data (json/generate-string {:path (:uri-spec service)
-                                           :methods methods
-                                           :restrict restrictions})]
-      (.. *curator-framework* setData (forPath node-path (.getBytes node-data "utf-8"))))))
+  (let [node-path (str "/" *environment* "/instances/" (:name service))
+        node-data (json/generate-string {:path (:uri-spec service)
+                                         :methods methods
+                                         :restrict restrictions})]
+    (.. *curator-framework* setData (forPath node-path (.getBytes node-data "utf-8")))))
 
 (defn healthy?
   "Is service registration healthy? Are we able to connect to Zookeeper "
   []
   (try
-    (doseq [[environment discovery] *service-discoveries*]
-      (.queryForNames discovery))
-    (not (empty? *service-discoveries*))
+    (.queryForNames *service-discovery*)
     (catch Exception e
       (warn e "Service discovery failed to get service names from Zookeeper")
       false)))

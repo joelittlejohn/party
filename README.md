@@ -69,9 +69,9 @@ Services that use `eureka.discovery` should add a call to `(eureka.discovery/hea
 
 ## Graceful shutdown
 
-When you register for service discovery it's essential that your instances unregister gracefully (e.g. when your sevice is deployed and old instances are shut down, you shouldn't see a short period of downtime). You must unregister from service discovery **before** Jetty begins rejecting incoming requests.
+When you register for service discovery it's essential that your instances disconnect gracefully (e.g. when your sevice is deployed and old instances are shut down, you shouldn't see a short period of downtime). You must disconnect from service discovery **before** Jetty begins rejecting incoming requests.
 
-If you're using [instrumented-ring-jetty](http://github.brislabs.com/libraries/instrumented-ring-jetty) then you can create a safe shutdown like:
+If you're using [instrumented-ring-jetty-adapter](https://github.com/mixradio/instrumented-ring-jetty-adapter) then you can create a safe shutdown like:
 
 ```clj
 (defn configure-server [server]

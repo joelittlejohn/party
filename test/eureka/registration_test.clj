@@ -36,19 +36,6 @@
                              :uriSpec truthy}))
         (eureka/disconnect!)))
 
-(fact "register! creates a new registration in all relevant environments"
-      (with-zk {:nodes {"/poke/instances" nil
-                        "/cq1/instances" nil
-                        "/cq3/instances" nil}}
-        (eureka/connect! *zk-connect-string* "poke")
-        (eureka/register! {:name "foo"
-                           :uri-spec "/1.x/users/{userid}"
-                           :port 5000})
-        (zk/children *zk-client* "/poke/instances/foo") => (one-of string?)
-        (zk/children *zk-client* "/cq1/instances/foo") => (one-of string?)
-        (zk/children *zk-client* "/cq3/instances/foo") => (one-of string?)
-        (eureka/disconnect!)))
-
 (fact "register! with healthcheck fails when healthcheck fails"
       (with-zk {:nodes {"/poke/instances" nil
                         "/cq1/instances" nil
