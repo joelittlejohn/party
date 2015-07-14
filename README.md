@@ -29,6 +29,8 @@ A typical **registration** example, a backend service registering a resource:
 
 Services that use `eureka.registration` should add a call to `(eureka.registration/healthy?)` to their healthcheck.
 
+**Note: The `uri-spec` is optional, if you want to register an entire service (rather than an individual resource) and allow clients to construct the paths themselves, then omit the `uri-spec`.**
+
 You can also use a healthcheck function which must return truthy before registration will succeed. If the healthcheck function returns falsey, 10 attemps will be made to register, one second apart (override with `:eureka-registration-attempts` environ key):
 
 ```clj
