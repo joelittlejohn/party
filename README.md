@@ -6,7 +6,9 @@ A Clojure library that wraps the Curator service discovery/registration API and 
 
 ## Usage
 
-A typical **registration** example, a backend service registering a resource:
+#### A typical _registration_ example
+
+A backend service registering:
 
 ```clj
 (ns heartbeat.setup
@@ -14,10 +16,16 @@ A typical **registration** example, a backend service registering a resource:
 
 (defn register-public-resources []
   (eureka/connect!)
+  
+  ;; if you want to register the entire service (no uri-spec)
+  (eureka/register! {:name "foo"
+                     :port (Integer. (env :service-port)))
+                     
+  ;; if you want to register a specific resource
   (eureka/register! {:name "user-sessions"
                      :port (Integer. (env :service-port))
                      :uri-spec "/1.x/{territory}/users/{userid}/sessions/{devicetype}/{app}"}
-                     #(-> (web/healthcheck) :success))
+                     #(-> (web/healthcheck) :success)))
                      
 (defn start []
   (setup)
@@ -27,9 +35,7 @@ A typical **registration** example, a backend service registering a resource:
 
 `eureka.registration/connect!` uses the properties :zookeeper-connectionstring and :environment-name. An alternative to setting them in your project.clj file (or as system variables via a bash script) is to provide these two values directly as arguments to the function call.
 
-Services that use `eureka.registration` should add a call to `(eureka.registration/healthy?)` to their healthcheck.
-
-**Note: The `uri-spec` is optional, if you want to register an entire service (rather than an individual resource) and allow clients to construct the paths themselves, then omit the `uri-spec`.**
+Services that use `eureka.registration` should add a call to `(eureka.registration/healthy?)` to their healthcheck. Note from the above that the `uri-spec` is optional, if you want to register an entire service (rather than an individual resource) and allow clients to construct the paths themselves, then omit the `uri-spec`.
 
 You can also use a healthcheck function which must return truthy before registration will succeed. If the healthcheck function returns falsey, 10 attemps will be made to register, one second apart (override with `:eureka-registration-attempts` environ key):
 
@@ -42,7 +48,9 @@ You can also use a healthcheck function which must return truthy before registra
                      #(-> (web/healthcheck) :success))
 ```
 
-A typical **discovery** example, service _X_ finding an instance of service _Y_ to handle a request:
+#### A typical _discovery_ example
+
+Service _x_ finding an instance of service _y_ to handle a request:
 
 ```clj
 (ns x.setup
