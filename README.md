@@ -55,13 +55,21 @@ A typical **discovery** example, service _X_ finding an instance of service _Y_ 
 
 ```clj
 (ns x.core
-  (:require [eureka.discovery :as eureka])
+  (:require [clj-http.client :as http]
+            [eureka.discovery :as eureka])
 
 (defn fn-that-calls-y [territory]
+  ;; if you want to construct your own path
+  (http/get (eureka/base-url+ "y" "/1.x/" territory "/foo"))
+
+  ;; if you want to build the path using the registered uri-spec
+  (http/get (eureka/url "y" {:territory territory)))
+
+  ;; if you want to do something completely bespoke
   (with-open [service-provider (eureka/service-provider "y")]
-            (let [instance (.getInstance service-provider)]
-              ;; do something with instance
-              )))
+    (let [instance (.getInstance service-provider)]
+      ;; do something with instance
+      )))
 
 ```
 
