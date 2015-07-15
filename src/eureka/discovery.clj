@@ -3,6 +3,7 @@
   (:require [eureka.curator-utils :as c])
   (:require [clojure.string :refer [lower-case]]
             [clojure.tools.logging :refer [warn]]
+            [clojure.walk :refer [stringify-keys]]
             [environ.core :refer [env]]))
 
 (def ^:dynamic *curator-framework* nil)
@@ -52,3 +53,30 @@
     (catch Exception e
       (warn e "Service discovery failed to get service names from Zookeeper")
       false)))
+
+(defn url
+  "Construct a URL by finding an instance and using its scheme, ip,
+  port, and uri-spec. The given params will be applied to the uri-spec
+  to build a path."
+  [target params]
+  (with-open [s (service-provider target)]
+    (if-let [instance (.getInstance s)]
+      (let [scheme (if (.getSslPort instance) "https" "http")
+            port (or (.getSslPort instance) (.getPort instance))
+            host (.getAddress instance)
+            path (.buildUriSpec instance (stringify-keys params))]
+        (format "%s://%s:%s%s" scheme host port path))
+      (throw (Exception. (str "Unable to find an instance of " target))))))
+
+(defn base-url+
+  "Construct a URL by finding an instance and using its schema, ip and
+  port to build a base URL. The uri-spec is ignored and suffix is used
+  to build a path."
+  [target & suffix]
+  (with-open [s (service-provider target)]
+    (if-let [instance (.getInstance s)]
+      (let [scheme (if (.getSslPort instance) "https" "http")
+            port (or (.getSslPort instance) (.getPort instance))
+            host (.getAddress instance)]
+        (format "%s://%s:%s%s" scheme host port (apply str suffix)))
+      (throw (Exception. (str "Unable to find an instance of " target))))))

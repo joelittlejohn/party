@@ -36,3 +36,39 @@
             (.getPort instance) => 8080
             (.buildUriSpec instance {"*" "abc"}) => "/1.x/care/abc"))
         (eureka/disconnect!)))
+
+(fact "url can be used to build a url for an registered resource"
+      (with-zk {:nodes {"/dev/instances/care/7fee1629-8e38-4c7b-b584-8e9621b43f3b"
+                        (json/generate-string {:name "care"
+                                               :address "10.216.141.6"
+                                               :port 8080
+                                               :registrationTimeUTC 1387297218261
+                                               :serviceType "DYNAMIC"
+                                               :uriSpec {:parts [{:value "/1.x/care/", :variable false}
+                                                                 {:value "*", :variable true}]}})}}
+        (eureka/connect! *zk-connect-string* environment-name)
+        (eureka/url "care" {:* "users/foo"}) => "http://10.216.141.6:8080/1.x/care/users/foo"
+        (eureka/disconnect!)))
+
+(fact "url fails when an instance can't be found"
+      (with-zk {:nodes {"/dev/instances" nil}}
+        (eureka/connect! *zk-connect-string* environment-name)
+        (eureka/url "care" {:* "users/foo"}) => (throws Exception)
+        (eureka/disconnect!)))
+
+(fact "base-url+ can be used to build a url for an instance"
+      (with-zk {:nodes {"/dev/instances/foo/7fee1629-8e38-4c7b-b584-8e9621b43f3b"
+                        (json/generate-string {:name "foo"
+                                               :address "10.216.141.6"
+                                               :port 8080
+                                               :registrationTimeUTC 1387297218261
+                                               :serviceType "DYNAMIC"})}}
+        (eureka/connect! *zk-connect-string* environment-name)
+        (eureka/base-url+ "foo" "/1.x/users/" "foo" "/bar") => "http://10.216.141.6:8080/1.x/users/foo/bar"
+        (eureka/disconnect!)))
+
+(fact "base-url+ can be used to build a url for an instance"
+      (with-zk {:nodes {"/dev/instances" nil}}
+        (eureka/connect! *zk-connect-string* environment-name)
+        (eureka/base-url+ "foo" "/1.x/users/" "foo" "/bar") => (throws Exception)
+        (eureka/disconnect!)))
