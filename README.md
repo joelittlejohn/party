@@ -33,7 +33,7 @@ A backend service registering:
   (register-public-resources))
 ```
 
-`eureka.registration/connect!` uses the properties :zookeeper-connectionstring and :environment-name. An alternative to setting them in your project.clj file (or as system variables via a bash script) is to provide these two values directly as arguments to the function call.
+`eureka.registration/connect!` uses the properties `:zookeeper-connectionstring` and `:environment-name`. An alternative to setting them in your project.clj file (or as system variables via a bash script) is to provide these two values directly as arguments to the function call.
 
 Services that use `eureka.registration` should add a call to `(eureka.registration/healthy?)` to their healthcheck. Note from the above that the `uri-spec` is optional, if you want to register an entire service (rather than an individual resource) and allow clients to construct the paths themselves, then omit the `uri-spec`.
 
