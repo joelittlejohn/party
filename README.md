@@ -1,8 +1,12 @@
-# eureka
+# party
 
-![latest version](http://clojars.brislabs.com/eureka/latest-version.svg)
+<img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Party_icon.svg" alt="Let's party!" title="Let's party!" align="right" width="250"/>
 
-A Clojure library that wraps the Curator service discovery/registration API and provides a set of idiomatic Clojure functions to register and discover services. Eureka also manages the lifecycle of the CuratorFramework internally, creating a connection to zookeeper instances as necessary and closing those connections when your application terminates.
+![latest version](http://clojars.brislabs.com/party/latest-version.svg)
+
+A Clojure library that wraps the Curator service discovery/registration API and provides a set of idiomatic Clojure functions to register and discover services. 
+
+Party also helps manage the lifecycle of the CuratorFramework internally, creating and maintaining a connection to zookeeper instances as necessary, and closing those connections when your application terminates.
 
 ## Usage
 
@@ -12,17 +16,17 @@ A backend service registering:
 
 ```clj
 (ns heartbeat.setup
-  (:require [eureka.registration :as eureka])
+  (:require [party.registration :as party])
 
 (defn register-public-resources []
-  (eureka/connect!)
+  (party/connect!)
   
   ;; if you want to register the entire service (no uri-spec)
-  (eureka/register! {:name "foo"
+  (party/register! {:name "foo"
                      :port (Integer. (env :service-port)))
                      
   ;; if you want to register a specific resource
-  (eureka/register! {:name "user-sessions"
+  (party/register! {:name "user-sessions"
                      :port (Integer. (env :service-port))
                      :uri-spec "/1.x/{territory}/users/{userid}/sessions/{devicetype}/{app}"}
                      #(-> (web/healthcheck) :success)))
@@ -33,16 +37,16 @@ A backend service registering:
   (register-public-resources))
 ```
 
-`eureka.registration/connect!` uses the properties `:zookeeper-connectionstring` and `:environment-name`. An alternative to setting them in your project.clj file (or as system variables via a bash script) is to provide these two values directly as arguments to the function call.
+`party.registration/connect!` uses the properties `:zookeeper-connectionstring` and `:environment-name`. An alternative to setting them in your project.clj file (or as system variables via a bash script) is to provide these two values directly as arguments to the function call.
 
-Services that use `eureka.registration` should add a call to `(eureka.registration/healthy?)` to their healthcheck. Note from the above that the `uri-spec` is optional, if you want to register an entire service (rather than an individual resource) and allow clients to construct the paths themselves, then omit the `uri-spec`.
+Services that use `party.registration` should add a call to `(party.registration/healthy?)` to their healthcheck. Note from the above that the `uri-spec` is optional, if you want to register an entire service (rather than an individual resource) and allow clients to construct the paths themselves, then omit the `uri-spec`.
 
-You can also use a healthcheck function which must return truthy before registration will succeed. If the healthcheck function returns falsey, 10 attemps will be made to register, one second apart (override with `:eureka-registration-attempts` environ key):
+You can also use a healthcheck function which must return truthy before registration will succeed. If the healthcheck function returns falsey, 10 attemps will be made to register, one second apart (override with `:party-registration-attempts` environ key):
 
 ```clj
 (defn register-public-resources []
-  (eureka/connect!)
-  (eureka/register! {:name "user-sessions"
+  (party/connect!)
+  (party/register! {:name "user-sessions"
                      :port (Integer. (env :service-port))
                      :uri-spec "/1.x/{territory}/users/{userid}/sessions/{devicetype}/{app}"}
                      #(-> (web/healthcheck) :success))
@@ -54,34 +58,34 @@ Service _x_ finding an instance of service _y_ to handle a request:
 
 ```clj
 (ns x.setup
-  (:require [eureka.discovery :as eureka])
+  (:require [party.discovery :as party])
 
 (defn setup []
   ...
-  (eureka/connect!))
+  (party/connect!))
 ```
 
 ```clj
 (ns x.core
   (:require [clj-http.client :as http]
-            [eureka.discovery :as eureka])
+            [party.discovery :as party])
 
 (defn fn-that-calls-y [territory]
   ;; if you want to construct your own path
-  (http/get (eureka/base-url+ "y" "/1.x/" territory "/foo"))
+  (http/get (party/base-url+ "y" "/1.x/" territory "/foo"))
 
   ;; if you want to build the path using the registered uri-spec
-  (http/get (eureka/url "y" {:territory territory)))
+  (http/get (party/url "y" {:territory territory)))
 
   ;; if you want to do something completely bespoke
-  (with-open [service-provider (eureka/service-provider "y")]
+  (with-open [service-provider (party/service-provider "y")]
     (let [instance (.getInstance service-provider)]
       ;; do something with instance
       )))
 
 ```
 
-Services that use `eureka.discovery` should add a call to `(eureka.discovery/healthy?)` to their healthcheck.
+Services that use `party.discovery` should add a call to `(party.discovery/healthy?)` to their healthcheck.
 
 ## Graceful shutdown
 
@@ -97,7 +101,7 @@ If you're using [instrumented-ring-jetty-adapter](https://github.com/mixradio/in
 
 (defn unregister-public-resources
   []
-  (eureka/disconnect!)
+  (party/disconnect!)
   (Thread/sleep (Integer/valueOf (env :service-curator-gracefulunregister-millis))))
 
 (defn start-server []

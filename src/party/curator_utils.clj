@@ -1,4 +1,4 @@
-(ns eureka.curator-utils
+(ns party.curator-utils
   "Utilities for connecting/reading/writing to Curator service discovery."
   (:require [cemerick.url :as url]
             [clojure.string :refer [lower-case]])

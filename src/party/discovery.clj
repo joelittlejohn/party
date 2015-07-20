@@ -1,6 +1,6 @@
-(ns eureka.discovery
+(ns party.discovery
   "Service discovery via Curator."
-  (:require [eureka.curator-utils :as c])
+  (:require [party.curator-utils :as c])
   (:require [clojure.string :refer [lower-case blank?]]
             [clojure.tools.logging :refer [warn]]
             [clojure.walk :refer [stringify-keys]]

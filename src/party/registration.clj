@@ -1,7 +1,7 @@
-(ns eureka.registration
+(ns party.registration
   "Service registration via Curator. Register resources and expose them
   to the outside world via Gatekeeper."
-  (:require [eureka.curator-utils :as c])
+  (:require [party.curator-utils :as c])
   (:require [cheshire.core :as json]
             [clojure.string :refer [lower-case]]
             [clojure.tools.logging :refer [info warn]]
@@ -54,13 +54,13 @@
 
   {:name \"care\", :port \"8080\", :uri-spec \"/1.x/care/*\"}
 
-  If registering with a healthcheck fn, eureka will wait one second between
-  attempts. If not specified by :eureka-registration-attempts, there will be
+  If registering with a healthcheck fn, party will wait one second between
+  attempts. If not specified by :party-registration-attempts, there will be
   10 attempts to register before an exception is thrown."
   ([service]
    (register! service (constantly true)))
   ([service healthy?]
-   (register! service healthy? (Integer/valueOf (env :eureka-registration-attempts "10"))))
+   (register! service healthy? (Integer/valueOf (env :party-registration-attempts "10"))))
   ([service healthy? attempts]
    (when (< attempts 1)
      (throw (Exception. (str "Failed to register service: " service))))
