@@ -1,10 +1,11 @@
 (ns eureka.curator-utils
   "Utilities for connecting/reading/writing to Curator service discovery."
-  (:require [clojure.string :refer [lower-case]])
+  (:require [cemerick.url :as url]
+            [clojure.string :refer [lower-case]])
   (:import [java.util UUID]
            [org.apache.curator.framework CuratorFrameworkFactory]
            [org.apache.curator.retry RetryOneTime]
-           [org.apache.curator.x.discovery ServiceDiscoveryBuilder ServiceInstance UriSpec]
+           [org.apache.curator.x.discovery ServiceDiscoveryBuilder ServiceInstance ServiceProvider UriSpec]
            [org.apache.curator.x.discovery.strategies RandomStrategy]))
 
 (defn curator-framework [connection-string]
@@ -35,3 +36,13 @@
             (providerStrategy (RandomStrategy.))
             (build))
     (.start)))
+
+(defn fake-service-provider [name service-url]
+  (let [url-parts (url/url service-url)]
+    (reify ServiceProvider
+      (getInstance [this]
+        (service-instance {:name name
+                           :port (:port url-parts)
+                           :uri-spec (:path url-parts)
+                           :address (:host url-parts)}))
+      (close [this]))))

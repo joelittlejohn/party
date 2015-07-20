@@ -3,6 +3,7 @@
   :description "A Clojure library that wraps the Curator service discovery/registration API."
 
   :dependencies [[cheshire "5.3.1"]
+                 [com.cemerick/url "0.1.1"]
                  [environ "0.5.0"]
                  [org.flatland/useful "0.11.2"]
                  [org.apache.curator/curator-x-discovery "2.7.0" :exclusions [org.slf4j/slf4j-log4j12]]

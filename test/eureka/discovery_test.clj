@@ -1,6 +1,7 @@
 (ns eureka.discovery-test
   (:require [eureka.discovery :as eureka])
   (:require [cheshire.core :as json]
+            [environ.core :refer [env]]
             [midje.sweet :refer :all]
             [zookem.core :refer [with-zk *zk-connect-string*]]))
 
@@ -67,8 +68,15 @@
         (eureka/base-url+ "foo" "/1.x/users/" "foo" "/bar") => "http://10.216.141.6:8080/1.x/users/foo/bar"
         (eureka/disconnect!)))
 
-(fact "base-url+ can be used to build a url for an instance"
+(fact "base-url+ fails when an instance can't be found"
       (with-zk {:nodes {"/dev/instances" nil}}
         (eureka/connect! *zk-connect-string* environment-name)
         (eureka/base-url+ "foo" "/1.x/users/" "foo" "/bar") => (throws Exception)
         (eureka/disconnect!)))
+
+(fact "discovery can be overriden with a config property"
+      (against-background (before :facts (alter-var-root #'env assoc :discovery-override-foo "http://x:1234/path"))
+                          (after :facts (alter-var-root #'env dissoc :discovery-override-foo)))
+
+      (eureka/base-url+ "foo" "/1.x/users") => "http://x:1234/1.x/users"
+      (eureka/url "foo" {}) => "http://x:1234/path")

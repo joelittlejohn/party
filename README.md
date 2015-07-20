@@ -105,3 +105,15 @@ If you're using [instrumented-ring-jetty-adapter](https://github.com/mixradio/in
                                      :configurator configure-server
                                      :on-stop unregister-public-resources}))
 ```
+
+## Testing
+
+For functional testing, it's often useful to skip service discovery and provide an explicit URL. For a service `foo`, you can override the URL like:
+
+```
+:discovery-override-foo "http://localhost:8081/1.x/foo/{bar}/baz"
+```
+
+Since we use environ, the same can be achieved using `export DISCOVERY_OVERRIDE_FOO` or `-Ddiscovery.override.foo`. The path (`/1.x/foo/{bar}/baz`) is of course optional.
+
+Since we're effectively skipping the discovery step here, it's recommended that you have a least some tests that fully integrate and _do_ exercise the discovery mechanism.

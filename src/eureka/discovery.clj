@@ -1,7 +1,7 @@
 (ns eureka.discovery
   "Service discovery via Curator."
   (:require [eureka.curator-utils :as c])
-  (:require [clojure.string :refer [lower-case]]
+  (:require [clojure.string :refer [lower-case blank?]]
             [clojure.tools.logging :refer [warn]]
             [clojure.walk :refer [stringify-keys]]
             [environ.core :refer [env]]))
@@ -30,6 +30,9 @@
      (alter-var-root #'*curator-framework* (constantly (c/curator-framework connection-string)))
      (alter-var-root #'*service-discovery* (constantly (c/service-discovery *curator-framework* (lower-case environment-name))))))
 
+(defn ^:private override-url [name]
+  (env (keyword (str "discovery-override-" name))))
+
 (defn service-provider
   "Create a service provider (object that is able to create service
   instances) for the given service name. A good way to use the returned
@@ -40,7 +43,9 @@
   Service providers may be cached and reused, however service instances
   should *never* be reused."
   [name]
-  (c/service-provider *service-discovery* name))
+  (if-let [override-url (override-url name)]
+    (c/fake-service-provider name override-url)
+    (c/service-provider *service-discovery* name)))
 
 (defn healthy?
   "Is service discovery healthy? Are we connected to Zookeeper and able
