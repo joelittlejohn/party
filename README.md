@@ -87,6 +87,8 @@ Service _x_ finding an instance of service _y_ to handle a request:
 
 Services that use `party.discovery` should add a call to `(party.discovery/healthy?)` to their healthcheck.
 
+**IMPORTANT: Don't every save URLs produced by `url` or `base-url+` for later use. Get a new one each time.**
+
 ## Graceful shutdown
 
 When you register for service discovery it's essential that your instances disconnect gracefully (e.g. when your sevice is deployed and old instances are shut down, you shouldn't see a short period of downtime). You must disconnect from service discovery **before** Jetty begins rejecting incoming requests.
