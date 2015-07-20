@@ -10,13 +10,13 @@
 (fact "health check succeeds when service discovery can list instances"
       (with-zk {:nodes {"/dev/instances" nil}}
         (party/connect! *zk-connect-string* environment-name)
-        (party/healthy?) => truthy
+        (party/healthy?) => true
         (party/disconnect!)))
 
 (fact "health check fails when service discovery cannot list instances"
       (with-zk {}
         (party/connect! *zk-connect-string* environment-name)
-        (party/healthy?) => falsey
+        (party/healthy?) => false
         (party/disconnect!)))
 
 (fact "service provider can be used to find an instance"

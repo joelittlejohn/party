@@ -52,12 +52,12 @@
   to lookup service names using Curator? This is a good thing to add to
   your healthcheck if your service depends on service discovery."
   []
-  (try
-    (.queryForNames *service-discovery*)
-    true
-    (catch Exception e
-      (warn e "Service discovery failed to get service names from Zookeeper")
-      false)))
+  (boolean
+    (try
+      (.queryForNames *service-discovery*)
+      true
+      (catch Exception e
+        (warn e "Service discovery failed to get service names from Zookeeper")))))
 
 (defn url
   "Construct a URL by finding an instance and using its scheme, ip,

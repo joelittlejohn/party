@@ -103,8 +103,8 @@
 (defn healthy?
   "Is service registration healthy? Are we able to connect to Zookeeper "
   []
-  (try
-    (.queryForNames *service-discovery*)
-    (catch Exception e
-      (warn e "Service discovery failed to get service names from Zookeeper")
-      false)))
+  (boolean
+    (try
+      (.queryForNames *service-discovery*)
+      (catch Exception e
+        (warn e "Service discovery failed to get service names from Zookeeper")))))
