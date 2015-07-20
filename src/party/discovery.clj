@@ -55,7 +55,6 @@
   (boolean
     (try
       (.queryForNames *service-discovery*)
-      true
       (catch Exception e
         (warn e "Service discovery failed to get service names from Zookeeper")))))
 
