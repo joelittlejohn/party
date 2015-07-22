@@ -22,8 +22,9 @@
 (defn connect!
   "Connect to Zookeeper and initialize service discovery"
   ([]
-     (connect! (or (env :environment-zookeeper-connectionstring)
-                   (env :zookeeper-connectionstring))
+     (connect! (or (env :zookeeper-discovery-connectionstring)
+                   (env :zookeeper-connectionstring)
+                   (env :environment-zookeeper-connectionstring))
                (env :environment-name)))
   ([connection-string environment-name]
      (disconnect!)
