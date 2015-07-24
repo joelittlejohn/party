@@ -23,13 +23,12 @@ A backend service registering:
   
   ;; if you want to register the entire service (no uri-spec)
   (party/register! {:name "foo"
-                     :port (Integer. (env :service-port)))
+                    :port (Integer. (env :service-port)))
                      
   ;; if you want to register a specific resource
   (party/register! {:name "user-sessions"
-                     :port (Integer. (env :service-port))
-                     :uri-spec "/1.x/{territory}/users/{userid}/sessions/{devicetype}/{app}"}
-                     #(-> (web/healthcheck) :success)))
+                    :port (Integer. (env :service-port))
+                    :uri-spec "/1.x/{territory}/users/{userid}/sessions/{devicetype}/{app}"}))
                      
 (defn start []
   (setup)
@@ -47,8 +46,8 @@ You can also use a healthcheck function which must return truthy before registra
 (defn register-public-resources []
   (party/connect!)
   (party/register! {:name "user-sessions"
-                     :port (Integer. (env :service-port))
-                     :uri-spec "/1.x/{territory}/users/{userid}/sessions/{devicetype}/{app}"}
+                    :port (Integer. (env :service-port))
+                    :uri-spec "/1.x/{territory}/users/{userid}/sessions/{devicetype}/{app}"}
                      #(-> (web/healthcheck) :success))
 ```
 
