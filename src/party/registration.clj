@@ -28,9 +28,10 @@
 (defn connect!
   "Connect to Zookeeper and initialize service registration"
   ([]
-     (connect! (or (env :environment-zookeeper-connectionstring)
-                   (env :zookeeper-connectionstring))
-               (env :environment-name)))
+   (connect! (or (env :zookeeper-registration-connectionstring)
+                 (env :zookeeper-connectionstring)
+                 (env :environment-zookeeper-connectionstring))
+             (env :environment-name)))
   ([connection-string environment-name]
    (disconnect!)
    (alter-var-root #'*environment* (constantly (lower-case environment-name)))
