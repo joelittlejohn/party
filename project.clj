@@ -1,4 +1,4 @@
-(defproject party "1.0.1-SNAPSHOT"
+(defproject party "1.0.1"
 
   :description "A Clojure library that wraps the Curator service discovery/registration API."
 
