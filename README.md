@@ -86,7 +86,7 @@ Service _x_ finding an instance of service _y_ to handle a request:
 
 Services that use `party.discovery` should add a call to `(party.discovery/healthy?)` to their healthcheck.
 
-**IMPORTANT: When you use party for discovery you are building an URL using an IP address that is only valid for the current call. IP addresses can change at any time, and your calls _should_ be balanced across all IPs. Don't _ever_ save URLs produced by `url` or `base-url+` for later use. Get a new one each time.**
+**IMPORTANT: When you use party for discovery you are building a URL using an IP address that is only valid for the current call. IP addresses can change at any time, and your calls _should_ be balanced across all IPs. Don't _ever_ save URLs produced by `url` or `base-url+` for later use. Get a new one each time.**
 
 ## Graceful shutdown
 
