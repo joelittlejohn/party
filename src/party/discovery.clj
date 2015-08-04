@@ -73,6 +73,13 @@
         (format "%s://%s:%s%s" scheme host port path))
       (throw (Exception. (str "Unable to find an instance of " target))))))
 
+(defn url+
+  "Construct a URL by finding an instance and using its scheme, ip,
+  port, and uri-spec. The given params will be applied to the uri-spec
+  to build a path. Finally the given suffix args will be added to the path"
+  [target params & suffix]
+  (apply str (url target params) suffix))
+
 (defn base-url+
   "Construct a URL by finding an instance and using its schema, ip and
   port to build a base URL. The uri-spec is ignored and suffix is used
