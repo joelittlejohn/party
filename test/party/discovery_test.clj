@@ -51,6 +51,17 @@
         (party/url+ "care" {:* "users/foo"} "/" "bar") => "http://10.216.141.6:8080/1.x/care/users/foo/bar"
         (party/disconnect!)))
 
+(fact "url+ can be used when service has no uri-spec"
+      (with-zk {:nodes {"/dev/instances/care/7fee1629-8e38-4c7b-b584-8e9621b43f3b"
+                        (json/generate-string {:name "care"
+                                               :address "10.216.141.6"
+                                               :port 8080
+                                               :registrationTimeUTC 1387297218261
+                                               :serviceType "DYNAMIC"})}}
+        (party/connect! *zk-connect-string* environment-name)
+        (party/url+ "care" {} "/bar") => "http://10.216.141.6:8080/bar"
+        (party/disconnect!)))
+
 (fact "url can be used to build a url for an registered resource"
       (with-zk {:nodes {"/dev/instances/care/7fee1629-8e38-4c7b-b584-8e9621b43f3b"
                         (json/generate-string {:name "care"
