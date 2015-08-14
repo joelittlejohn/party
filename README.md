@@ -2,8 +2,6 @@
 
 <img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Party_icon.svg" alt="Let's party!" title="Let's party!" align="right" width="250"/>
 
-![latest version](http://clojars.brislabs.com/party/latest-version.svg)
-
 A Clojure library that wraps the Curator service discovery/registration API and provides a set of idiomatic Clojure functions to register and discover services. 
 
 Party also helps manage the lifecycle of the CuratorFramework internally, creating and maintaining a connection to zookeeper instances as necessary, and closing those connections when your application terminates.
@@ -122,3 +120,10 @@ For functional testing, it's often useful to skip service discovery and provide 
 Since we use environ, the same can be achieved using `export DISCOVERY_OVERRIDE_FOO` or `-Ddiscovery.override.foo`. The path (`/1.x/foo/{bar}/baz`) is of course optional.
 
 Since we're effectively skipping the discovery step here, it's recommended that you have a least some tests that fully integrate and _do_ exercise the discovery mechanism.
+
+
+# License
+
+Copyright © 2015 MixRadio
+
+party is released under the 3-clause license ("New BSD License" or "Modified BSD License")
