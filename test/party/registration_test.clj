@@ -69,17 +69,3 @@
                            :port 5000})
         (zk/children *zk-client* "/dev/instances/foo") => (one-of string?)
         (party/disconnect!)))
-
-(fact "expose! attaches data to registered service"
-      (with-zk {:nodes {"/dev/instances" nil}}
-        (let [service {:name "foo"
-                       :uri-spec "/1.x/users/{userid}"
-                       :port 5000}]
-          (party/connect! *zk-connect-string* "dev")
-          (party/register! service)
-          (party/expose! service [:get :post] {:role ["user"]})
-          (let [data (-> (zk/data *zk-client* "/dev/instances/foo") :data (String.) (json/parse-string true))]
-            data => (contains {:path "/1.x/users/{userid}"
-                               :restrict {:role ["user"]}
-                               :methods ["get" "post"]}))
-          (party/disconnect!))))

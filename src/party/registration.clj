@@ -73,34 +73,6 @@
          (.sleep TimeUnit/SECONDS 1)
          (recur service healthy? (dec attempts))))))
 
-(defn expose!
-  "**NOT YET SUPPORTED**
-
-  Expose a registered service publicly (through Gatekeeper) so that it can
-  be accessed by clients via api/sapi/private domains. Be sure to think
-  hard about what restrictions to apply to your resource *before*
-  exposing it.
-
-  An example for a careops resource:
-
-  (expose! service [:get :post] {:role [\"care\"]
-                                 :domain [\"private\"]
-                                 :ip [\"internal\"]})
-
-  An example user-authenticated resource (supports oauth1, noa oauth2,
-  jagus oauth2, etc):
-
-  (expose! service [:get :post] {:role [\"user\"]})
-
-  *Note*: You must (register!) your service before it can be exposed."
-  [service methods restrictions]
-  {:pre [(:uri-spec service) (seq methods)]}
-  (let [node-path (str "/" *environment* "/instances/" (:name service))
-        node-data (json/generate-string {:path (:uri-spec service)
-                                         :methods methods
-                                         :restrict restrictions})]
-    (.. *curator-framework* setData (forPath node-path (.getBytes node-data "utf-8")))))
-
 (defn healthy?
   "Is service registration healthy? Are we able to connect to Zookeeper "
   []
