@@ -2,15 +2,15 @@
 
 <img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Party_icon.svg" alt="Let's party!" title="Let's party!" align="right" width="250"/>
 
-A Clojure library that wraps the Curator service discovery/registration API and provides a set of idiomatic Clojure functions to register and discover services. 
+A Clojure library that wraps the Curator service discovery/registration API and provides a set of Clojure functions to register and discover services. 
 
-Party also helps manage the lifecycle of the CuratorFramework internally, creating and maintaining a connection to zookeeper instances as necessary, and closing those connections when your application terminates.
+Party also helps manage the lifecycle of the CuratorFramework internally, creating and maintaining connections to Zookeeper as necessary and closing those connections when your application terminates.
 
 ## Usage
 
 #### A typical _registration_ example
 
-A backend service registering:
+A service registering:
 
 ```clj
 (ns heartbeat.setup
@@ -34,7 +34,7 @@ A backend service registering:
   (register-public-resources))
 ```
 
-`party.registration/connect!` uses the properties `:zookeeper-connectionstring` and `:environment-name`. An alternative to setting them in your project.clj file (or as system variables via a bash script) is to provide these two values directly as arguments to the function call.
+`party.registration/connect!` uses the [environ](https://github.com/weavejester/environ) properties `:zookeeper-connectionstring` and `:environment-name`. An alternative to setting them in your project.clj file (or as system variables via a bash script) is to provide these two values directly as arguments to the function call.
 
 Services that use `party.registration` should add a call to `(party.registration/healthy?)` to their healthcheck. Note from the above that the `uri-spec` is optional, if you want to register an entire service (rather than an individual resource) and allow clients to construct the paths themselves, then omit the `uri-spec`.
 
@@ -120,7 +120,6 @@ For functional testing, it's often useful to skip service discovery and provide 
 Since we use environ, the same can be achieved using `export DISCOVERY_OVERRIDE_FOO` or `-Ddiscovery.override.foo`. The path (`/1.x/foo/{bar}/baz`) is of course optional.
 
 Since we're effectively skipping the discovery step here, it's recommended that you have a least some tests that fully integrate and _do_ exercise the discovery mechanism.
-
 
 # License
 
