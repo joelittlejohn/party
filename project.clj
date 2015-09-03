@@ -2,6 +2,10 @@
 
   :description "A Clojure library that wraps the Curator service discovery/registration API."
 
+  :license "https://github.com/mixradio/party/blob/master/LICENSE"
+
+  :url "https://github.com/mixradio/party"
+
   :dependencies [[cheshire "5.5.0"]
                  [com.cemerick/url "0.1.1"]
                  [environ "1.0.0"]
