@@ -42,9 +42,9 @@
                         "/cq3/instances" nil}}
         (party/connect! *zk-connect-string* "poke")
         (party/register! {:name "foo"
-                           :uri-spec "/1.x/users/{userid}"
-                           :port 5000} (constantly false) 1) => (throws Exception)
-        (party/disconnect!)))
+                          :uri-spec "/1.x/users/{userid}"
+                          :port 5000} (constantly false) 1) => (throws Exception)
+                          (party/disconnect!)))
 
 (declare healthy?)
 
@@ -54,8 +54,8 @@
                         "/cq3/instances" nil}}
         (party/connect! *zk-connect-string* "poke")
         (party/register! {:name "foobar"
-                           :uri-spec "/1.x/users/{userid}"
-                           :port 5000} healthy? 2)
+                          :uri-spec "/1.x/users/{userid}"
+                          :port 5000} healthy? 2)
         => string?
         (provided
          (healthy?) =streams=> [false true])
@@ -65,7 +65,7 @@
 (fact "uri-spec is optional for register!"
       (with-zk {:nodes {"/dev/instances" nil}}
         (party/connect! *zk-connect-string* "dev")
-        (party/register! {:name "foo"
-                           :port 5000})
-        (zk/children *zk-client* "/dev/instances/foo") => (one-of string?)
+        (party/register! {:name "no-uri-spec"
+                          :port 5000})
+        (zk/children *zk-client* "/dev/instances/no-uri-spec") => (one-of string?)
         (party/disconnect!)))
