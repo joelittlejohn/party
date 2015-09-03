@@ -1,4 +1,4 @@
-(defproject party "1.0.3-SNAPSHOT"
+(defproject mixradio/party "1.0.3-SNAPSHOT"
 
   :description "A Clojure library that wraps the Curator service discovery/registration API."
 
