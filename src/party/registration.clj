@@ -68,7 +68,7 @@
    (if (healthy?)
      (let [instance (c/service-instance service)]
        (.registerService *service-discovery* instance)
-       (. instance getId))
+       (.getId instance))
      (do (info "Not yet healthy, can't register" service)
          (.sleep TimeUnit/SECONDS 1)
          (recur service healthy? (dec attempts))))))
@@ -77,7 +77,7 @@
   "Is service registration healthy? Are we able to connect to Zookeeper "
   []
   (boolean
-    (try
-      (.queryForNames *service-discovery*)
-      (catch Exception e
-        (warn e "Service discovery failed to get service names from Zookeeper")))))
+   (try
+     (.queryForNames *service-discovery*)
+     (catch Exception e
+       (warn e "Service discovery failed to get service names from Zookeeper")))))

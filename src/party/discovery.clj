@@ -22,14 +22,14 @@
 (defn connect!
   "Connect to Zookeeper and initialize service discovery"
   ([]
-     (connect! (or (env :zookeeper-discovery-connectionstring)
-                   (env :zookeeper-connectionstring)
-                   (env :environment-zookeeper-connectionstring))
-               (env :environment-name)))
+   (connect! (or (env :zookeeper-discovery-connectionstring)
+                 (env :zookeeper-connectionstring)
+                 (env :environment-zookeeper-connectionstring))
+             (env :environment-name)))
   ([connection-string environment-name]
-     (disconnect!)
-     (alter-var-root #'*curator-framework* (constantly (c/curator-framework connection-string)))
-     (alter-var-root #'*service-discovery* (constantly (c/service-discovery *curator-framework* (lower-case environment-name))))))
+   (disconnect!)
+   (alter-var-root #'*curator-framework* (constantly (c/curator-framework connection-string)))
+   (alter-var-root #'*service-discovery* (constantly (c/service-discovery *curator-framework* (lower-case environment-name))))))
 
 (defn ^:private override-url [name]
   (env (keyword (str "discovery-override-" name))))
@@ -54,10 +54,10 @@
   your healthcheck if your service depends on service discovery."
   []
   (boolean
-    (try
-      (.queryForNames *service-discovery*)
-      (catch Exception e
-        (warn e "Service discovery failed to get service names from Zookeeper")))))
+   (try
+     (.queryForNames *service-discovery*)
+     (catch Exception e
+       (warn e "Service discovery failed to get service names from Zookeeper")))))
 
 (defn url
   "Construct a URL by finding an instance and using its scheme, ip,
