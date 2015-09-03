@@ -6,6 +6,8 @@ A Clojure library that wraps the Curator service discovery/registration API and 
 
 Party also helps manage the lifecycle of the CuratorFramework internally, creating and maintaining connections to Zookeeper as necessary and closing those connections when your application terminates.
 
+![latest version](https://clojars.org/mixradio/party/latest-version.svg)
+
 ## Usage
 
 #### A typical _registration_ example
