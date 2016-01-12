@@ -11,6 +11,7 @@
                  [environ "1.0.0"]
                  [org.flatland/useful "0.11.3"]
                  [org.apache.curator/curator-x-discovery "2.7.0" :exclusions [org.slf4j/slf4j-log4j12]]
+                 [org.clojure/core.cache "0.6.4"]
                  [org.clojure/clojure "1.6.0"]
                  [org.clojure/tools.logging "0.3.1"]
                  [zookeeper-clj "0.9.3"]]

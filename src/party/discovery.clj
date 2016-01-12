@@ -1,7 +1,8 @@
 (ns party.discovery
   "Service discovery via Curator."
   (:require [party.curator-utils :as c])
-  (:require [clojure.string :refer [lower-case blank?]]
+  (:require [clojure.core.cache :as cache]
+            [clojure.string :refer [lower-case blank?]]
             [clojure.tools.logging :refer [warn]]
             [clojure.walk :refer [stringify-keys]]
             [environ.core :refer [env]]))
@@ -10,12 +11,15 @@
 
 (def ^:private ^:dynamic *service-discovery* nil)
 
+(def ^:private service-provider-cache (atom nil))
+
 (defn disconnect!
   "Disconnect from service discovery, closing any connection to
   Zookeeper."
   []
   (when *curator-framework*
     (.close *curator-framework*)
+    (reset! service-provider-cache nil)
     (alter-var-root #'*curator-framework* (constantly nil))
     (alter-var-root #'*service-discovery* (constantly nil))))
 
@@ -28,6 +32,7 @@
              (env :environment-name)))
   ([connection-string environment-name]
    (disconnect!)
+   (reset! service-provider-cache (cache/basic-cache-factory {}))
    (alter-var-root #'*curator-framework* (constantly (c/curator-framework connection-string)))
    (alter-var-root #'*service-discovery* (constantly (c/service-discovery *curator-framework* (lower-case environment-name))))))
 
@@ -48,6 +53,14 @@
     (c/fake-service-provider name override-url)
     (c/service-provider *service-discovery* name)))
 
+(defn ^:private service-provider-cached
+  [name]
+  (if @service-provider-cache
+    (do (when-not (cache/has? @service-provider-cache name)
+          (swap! service-provider-cache cache/miss name (service-provider name)))
+        (cache/lookup @service-provider-cache name))
+    (service-provider name)))
+
 (defn healthy?
   "Is service discovery healthy? Are we connected to Zookeeper and able
   to lookup service names using Curator? This is a good thing to add to
@@ -64,7 +77,7 @@
   port, and uri-spec. The given params will be applied to the uri-spec
   to build a path."
   [target params]
-  (with-open [s (service-provider target)]
+  (let [s (service-provider-cached target)]
     (if-let [instance (.getInstance s)]
       (let [scheme (if (.getSslPort instance) "https" "http")
             port (or (.getSslPort instance) (.getPort instance))
@@ -85,7 +98,7 @@
   port to build a base URL. The uri-spec is ignored and suffix is used
   to build a path."
   [target & suffix]
-  (with-open [s (service-provider target)]
+  (let [s (service-provider-cached target)]
     (if-let [instance (.getInstance s)]
       (let [scheme (if (.getSslPort instance) "https" "http")
             port (or (.getSslPort instance) (.getPort instance))
