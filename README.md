@@ -1,4 +1,4 @@
-# party [![Build Status](https://travis-ci.org/mixradio/party.svg?branch=master)](https://travis-ci.org/mixradio/party)
+# party
 
 <img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Party_icon.svg" alt="Let's party!" title="Let's party!" align="right" width="250"/>
 
